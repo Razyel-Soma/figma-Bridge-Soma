@@ -4,25 +4,84 @@ Fork del [Figma Console MCP](https://github.com/southleft/figma-console-mcp) ext
 
 ## Qué añade este fork
 
-El repo original expone herramientas del canvas de Figma vía MCP. Este fork añade:
-
 - **Sistema de Skills** — instrucciones en markdown que definen flujos de trabajo completos para diseñadores
 - **Loader dinámico** — los skills se leen en tiempo real sin recompilar ni reiniciar el servidor
-- **Instrucciones de arranque** — el servidor carga `figma-murdoc.md` al iniciar para que Claude conozca el flujo de trabajo desde el primer mensaje
-- **8 skills listos para usar** — cubre los workflows más comunes de un equipo de diseño
+- **Instrucciones de arranque** — el servidor carga `figma-murdoc.md` al iniciar
+- **11 skills listos para usar** — cubre los workflows más comunes de un equipo de diseño
+- **Integración con Radix UI** — sistema de diseño base accesible con skills por industria
 
 ## Skills disponibles
 
-| Skill | Categoría | Qué hace |
+### Base
+| Skill | Qué hace |
+|---|---|
+| `figma-use` | Skill base obligatorio. Define cómo trabajar en el canvas de Figma |
+
+### Generación de pantallas
+| Skill | Qué hace |
+|---|---|
+| `generate-screen` | Genera cualquier pantalla: onboarding, login, dashboard, empty states o custom |
+| `generate-onboarding` | Flujo de onboarding mobile de 4 pantallas con sistema de diseño |
+
+### Documentación
+| Skill | Qué hace |
+|---|---|
+| `generate-documentation` | Documenta componentes listos para Notion, Confluence o Storybook |
+| `generate-showcase-page` | Genera una página web con componentes documentados, tokens y flujos |
+
+### Handoff a desarrollo
+| Skill | Qué hace |
+|---|---|
+| `prepare-handoff` | Prepara diseños para desarrollo: anotaciones, nomenclatura y "Ready for dev" |
+| `sync-tokens` | Exporta variables de Figma a CSS, Tailwind, JSON o Sass |
+
+### Auditoría y calidad
+| Skill | Qué hace |
+|---|---|
+| `audit-quality` | Detecta drift del DS, problemas WCAG y valores hardcodeados |
+
+### Sistema de diseño con Radix UI
+| Skill | Qué hace |
+|---|---|
+| `setup-radix-base` | Importa tokens de Radix UI como variables en Figma |
+| `generate-industry` | Genera DS completo por industria: travel, fintech, ecommerce, health, saas |
+| `apply-design-system` | Conecta diseños existentes al sistema de diseño activo |
+
+## Flujo Radix UI → Figma → Showcase
+
+```
+1. setup-radix-base
+   └── Crea variables en Figma: Colors, Typography, Spacing, Radius, Shadow
+
+2. generate-industry  (travel | fintech | ecommerce | health | saas)
+   ├── Extiende los tokens base con paleta de la industria
+   ├── Genera los componentes específicos del sector
+   └── Arma el flujo principal de pantallas
+
+3. generate-documentation
+   └── Documenta cada componente con variantes, props y notas ARIA
+
+4. generate-showcase-page
+   └── Produce index.html con tokens, componentes y flujos listos para desplegar
+```
+
+**Ejemplo completo:**
+```
+"Configura Radix base"                        → setup-radix-base
+"Genera el DS de travel para Wanderly"        → generate-industry (travel)
+"Documenta los componentes de Wanderly"       → generate-documentation
+"Genera el showcase para mostrarle al cliente" → generate-showcase-page
+```
+
+## Industrias disponibles
+
+| Industria | Componentes | Flujo principal |
 |---|---|---|
-| `figma-use` | Base | Skill base obligatorio. Define cómo trabajar en el canvas de Figma |
-| `generate-screen` | Generación | Genera cualquier pantalla: onboarding, login, dashboard, empty states o custom |
-| `generate-onboarding` | Generación | Flujo de onboarding mobile de 4 pantallas con sistema de diseño |
-| `generate-documentation` | Documentación | Documenta componentes y flujos listos para Notion, Confluence o Storybook |
-| `prepare-handoff` | Handoff | Prepara diseños para desarrollo: anotaciones, nomenclatura y "Ready for dev" |
-| `sync-tokens` | Handoff | Exporta variables de Figma a CSS, Tailwind, JSON o Sass |
-| `audit-quality` | Auditoría | Detecta drift del DS, problemas WCAG y valores hardcodeados |
-| `apply-design-system` | Sincronización | Conecta diseños existentes al sistema de diseño activo |
+| `travel` | DateRangePicker, FlightCard, SeatMap, SearchBar | Búsqueda → Resultados → Detalle → Checkout |
+| `fintech` | BalanceCard, TransactionRow, TransferForm, PinInput | Inicio → Transferir → Confirmar → PIN → Éxito |
+| `ecommerce` | ProductCard, CartItem, SizeSelector, FilterSidebar | Catálogo → Detalle → Carrito → Checkout |
+| `health` | DoctorCard, AppointmentSlot, HealthMetric, VitalChart | Buscar médico → Disponibilidad → Confirmar cita |
+| `saas` | StatCard, DataTable, Sidebar, CommandPalette | Dashboard → Detalle → Configuración |
 
 ## Requisitos
 
@@ -35,7 +94,7 @@ El repo original expone herramientas del canvas de Figma vía MCP. Este fork añ
 
 ### 1. Clonar el repo
 ```bash
-git clone https://github.com/Razyel-Soma/figma-Bridge-Soma.git
+git clone https://github.com/Razyel-Soma/figma-Murdoc.git
 cd figma-Bridge-Soma
 npm install
 ```
@@ -78,7 +137,7 @@ En Claude Desktop escribe:
 list_skills
 ```
 
-Deberías ver los 8 skills disponibles.
+Deberías ver los 11 skills disponibles.
 
 ## Uso
 
@@ -93,15 +152,15 @@ Espera a ver **"✓ Desktop Bridge active"** en el panel del plugin.
 
 Describe lo que quieres en lenguaje natural:
 ```
-Genera un flujo de onboarding para mi app de finanzas
+Configura el sistema de diseño base con Radix
+Genera los componentes de fintech para el cliente BancoX
 Documenta el componente Button de mi sistema de diseño
 Prepara el flujo de checkout para entregarlo a los devs
-Audita la calidad de la página actual
 ```
 
 ### Invocar un skill manualmente
 ```
-use_skill generate-screen
+use_skill generate-industry
 ```
 
 ## Añadir skills propios
@@ -132,10 +191,13 @@ figma-Bridge-Soma/
 │   ├── generate-screen.md
 │   ├── generate-onboarding.md
 │   ├── generate-documentation.md
+│   ├── generate-showcase-page.md
 │   ├── prepare-handoff.md
 │   ├── sync-tokens.md
 │   ├── audit-quality.md
-│   └── apply-design-system.md
+│   ├── apply-design-system.md
+│   ├── setup-radix-base.md
+│   └── generate-industry.md
 ├── src/
 │   ├── skills/loader.ts           ← Lee los .md en tiempo real
 │   ├── tools/skills.ts            ← Tools list_skills y use_skill
