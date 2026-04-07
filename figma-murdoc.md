@@ -77,6 +77,10 @@ Llama a list_skills para ver los disponibles. Usa use_skill para cargar uno.
 
 | Quiero... | Skill |
 |---|---|
+| Planificar una misión con personas | mission-planner |
+| Ejecutar pipeline de skills automático | run-mission |
+| Verificar calidad entre fases | review-gates |
+| Analizar métricas y mejorar skills | nen-analyze |
 | Generar pantallas de un flujo | generate-screen |
 | Documentar un componente o flujo | generate-documentation |
 | Preparar diseños para desarrollo | prepare-handoff |

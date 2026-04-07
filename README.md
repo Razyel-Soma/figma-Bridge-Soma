@@ -7,13 +7,22 @@ Fork del [Figma Console MCP](https://github.com/southleft/figma-console-mcp) ext
 - **Sistema de Skills** — instrucciones en markdown que definen flujos de trabajo completos para diseñadores
 - **Loader dinámico** — los skills se leen en tiempo real sin recompilar ni reiniciar el servidor
 - **Instrucciones de arranque** — el servidor carga `figma-murdoc.md` al iniciar
-- **15 skills listos para usar** — cubre los workflows más comunes de un equipo de diseño
+- **19 skills listos para usar** — cubre los workflows más comunes de un equipo de diseño
+- **Orquestación inteligente** — mission planner con personas, pipelines con dependencias, review gates y auto-mejora (Nen)
 - **Integración con Radix UI** — sistema de diseño base accesible con skills por industria
 - **Soporte para Slots nativos** — auditoría, migración y patrones de composición con la nueva feature de Figma
 - **Specs de accesibilidad** — generación de specs para VoiceOver, TalkBack y ARIA
 - **Reglas de Plugin API** — documentación de errores comunes y mejores prácticas integrada en los skills
 
-## Skills disponibles (15)
+## Skills disponibles (19)
+
+### Orquestación
+| Skill | Qué hace |
+|---|---|
+| `mission-planner` | Personas (UX, Visual, A11y, Dev, PM) que hacen preguntas preflight para completar el brief antes de diseñar |
+| `run-mission` | Ejecuta pipelines de skills con dependencias automáticas y review gates. Pipelines: ds-completo, pantallas, libreria, audit-completo |
+| `review-gates` | Verificación automática entre fases: tokens, componentes, pantallas, a11y, handoff. Con lógica de retry |
+| `nen-analyze` | Auto-mejora: analiza métricas de misiones, detecta errores recurrentes, identifica cuellos de botella, genera recomendaciones |
 
 ### Base
 | Skill | Qué hace |
@@ -218,7 +227,33 @@ En Claude Desktop escribe:
 list_skills
 ```
 
-Deberías ver los 15 skills disponibles.
+Deberías ver los 19 skills disponibles.
+
+## Flujo de misión (orquestación)
+
+```
+Usuario: "Necesito una app de fintech"
+        ↓
+mission-planner
+  🔍 UX Researcher: ¿Flujo de cuántos pasos? ¿Guest checkout?
+  🎨 Visual Designer: ¿Marca existente o empezamos con Radix?
+  ♿ A11y Specialist: ¿Screen readers? ¿Modo oscuro?
+  ⚙️ Developer: ¿React? ¿Componentes existentes?
+  📊 Product Manager: ¿Pantallas MVP?
+        ↓
+run-mission (pipeline: ds-completo)
+  Phase 1: setup-radix-base        → 🚦 verify-variables
+  Phase 2: generate-industry       → 🚦 verify-components
+  Phase 3: generate-library        → 🚦 review-quality ← retry si falla
+  Phase 4: generate-screen         → 🚦 review-quality ← retry si falla
+  Phase 5: create-voice            
+  Phase 6: prepare-handoff         
+  Phase 7: generate-showcase-page  
+        ↓
+nen-analyze
+  📊 Métricas guardadas → patrones detectados → recomendaciones
+  → Siguiente misión es más rápida y con menos errores
+```
 
 ## Uso
 
@@ -271,8 +306,12 @@ SKILL
 ## Estructura del proyecto
 ```
 figma-Murdoc/
-├── skills/                          ← Skills en markdown (15 archivos)
+├── skills/                          ← Skills en markdown (19 archivos)
 │   ├── figma-use.md                 ← Base + reglas de Plugin API
+│   ├── mission-planner.md           ← Personas preflight
+│   ├── run-mission.md               ← Pipelines con dependencias
+│   ├── review-gates.md              ← QA automático entre fases
+│   ├── nen-analyze.md               ← Auto-mejora con métricas
 │   ├── generate-screen.md           ← Pantallas con estructura slot-ready
 │   ├── generate-onboarding.md       ← Flujos onboarding mobile
 │   ├── generate-library.md          ← Librería desde codebase
